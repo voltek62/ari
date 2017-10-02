@@ -46,13 +46,24 @@ ari_narrate <- function(script, slides, output = "output.mp4", voice,
   if(!(capture_method %in% c("vectorized", "iterative"))) {
     stop('capture_method must be either "vectorized" or "iterative"')
   }
-  
-  output_dir <- normalizePath(dirname(output))
-  script <- normalizePath(script)
-  if(file.exists(slides)){
-    slides <- normalizePath(slides)
-    slides <- paste0("file://localhost", slides)
+
+  if (grepl("Windows",Sys.info()[1])) {
+    output_dir <- normalizePath(dirname(output), winslash = "/")
+    script <- normalizePath(script, winslash = "/")
+    if(file.exists(slides)){
+      slides <- normalizePath(slides, winslash = "/")
+      slides <- paste0("file:///", slides)      
+    }
   }
+  else {
+    output_dir <- normalizePath(dirname(output))
+    script <- normalizePath(script)
+    if(file.exists(slides)){
+      slides <- normalizePath(slides)
+      slides <- paste0("file://localhost", slides)      
+    }    
+  }
+  
   stopifnot(
     file.exists(script),
     dir.exists(output_dir)
